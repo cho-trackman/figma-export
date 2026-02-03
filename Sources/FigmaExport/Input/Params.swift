@@ -9,6 +9,7 @@ struct Params: Decodable {
         let lightHighContrastFileId: String?
         let darkHighContrastFileId: String?
         let timeout: TimeInterval?
+        let requestDelay: TimeInterval?  // Delay between API requests to prevent rate limiting
     }
 
     struct Common: Decodable {

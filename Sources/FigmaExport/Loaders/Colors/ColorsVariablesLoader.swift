@@ -39,7 +39,7 @@ final class ColorsVariablesLoader {
 
     private func loadVariables(fileId: String) throws -> VariablesEndpoint.Content {
         let endpoint = VariablesEndpoint(fileId: fileId)
-        return try client.request(endpoint)
+        return try client.requestWithRetry(endpoint, configuration: .default)
     }
 
     private func extractModeIds(from collections: Dictionary<String, VariableCollectionValue>.Values.Element) -> ModeIds {

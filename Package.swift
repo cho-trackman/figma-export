@@ -41,7 +41,10 @@ let package = Package(
         .target(name: "FigmaExportCore"),
         
         // Loads data via Figma REST API
-        .target(name: "FigmaAPI"),
+        .target(
+            name: "FigmaAPI",
+            dependencies: [.product(name: "Logging", package: "swift-log")]
+        ),
         
         // Exports resources to Xcode project
         .target(
@@ -84,6 +87,10 @@ let package = Package(
         .testTarget(
             name: "AndroidExportTests",
             dependencies: ["AndroidExport", .product(name: "CustomDump", package: "swift-custom-dump")]
+        ),
+        .testTarget(
+            name: "FigmaAPITests",
+            dependencies: ["FigmaAPI"]
         )
     ]
 )

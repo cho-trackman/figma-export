@@ -325,7 +325,7 @@ final class ImagesLoader {
 
     private func loadComponents(fileId: String) throws -> [Component] {
         let endpoint = ComponentsEndpoint(fileId: fileId)
-        return try client.request(endpoint)
+        return try client.requestWithRetry(endpoint, configuration: .default)
     }
 
     private func loadImages(fileId: String, imagesDict: [NodeId: Component], params: FormatParams) throws -> [NodeId: ImagePath] {
@@ -335,7 +335,7 @@ final class ImagesLoader {
         
         let keysWithValues: [(NodeId, ImagePath)] = try nodeIds.chunked(into: batchSize)
             .map { ImageEndpoint(fileId: fileId, nodeIds: $0, params: params) }
-            .map { try client.request($0) }
+            .map { try client.requestWithRetry($0, configuration: .default) }
             .flatMap { dict in
                 dict.compactMap { nodeId, imagePath in
                     if let imagePath {

@@ -55,12 +55,12 @@ final class TextStylesLoader {
 
     private func loadStyles(fileId: String) throws -> [Style] {
         let endpoint = StylesEndpoint(fileId: fileId)
-        let styles = try client.request(endpoint)
+        let styles = try client.requestWithRetry(endpoint, configuration: .default)
         return styles.filter { $0.styleType == .text }
     }
 
     private func loadNodes(fileId: String, nodeIds: [String]) throws -> [NodeId: Node] {
         let endpoint = NodesEndpoint(fileId: fileId, nodeIds: nodeIds)
-        return try client.request(endpoint)
+        return try client.requestWithRetry(endpoint, configuration: .default)
     }
 }
