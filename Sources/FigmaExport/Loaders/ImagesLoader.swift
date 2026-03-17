@@ -244,10 +244,14 @@ final class ImagesLoader {
             return true
         }
         
-        // TODO: filter out all icons but the reset one
+#if DEBUG
+        print("*** DEBUG MODE ENABLE - Will filter on \"Reset\" icons! ***")
+        print("Build in release to include all icons!")
+        
         imagesDict = imagesDict.filter { _, component in
             return (component.containingFrame.name ?? "").contains("Reset")
         }
+#endif
         
         logger.info("Fetching vector images...")
         let imageIdToImagePath = try loadImages(fileId: fileId, imagesDict: imagesDict, params: params)
