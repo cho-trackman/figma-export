@@ -79,7 +79,8 @@ extension FigmaExportCommand {
                 templatesPath: ios.templatesPath)
             
             let exporter = XcodeIconsExporter(output: output)
-            let localAndRemoteFiles = try exporter.export(icons: icons.get(), append: filter != nil)
+//            let localAndRemoteFiles = try exporter.export(icons: icons.get(), append: filter != nil)
+            let localAndRemoteFiles = try exporter.export(icons: icons.get(), append: false)
             if filter == nil {
                 try? FileManager.default.removeItem(atPath: assetsURL.path)
             }
@@ -89,10 +90,12 @@ extension FigmaExportCommand {
 
             logger.info("Writting files to Xcode project...")
             try fileWriter.write(files: localFiles)
-
+            
+            let cwd = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+            let finalPath = cwd.appendingPathComponent(assetsURL.path).path
             guard params.ios?.xcassetsInSwiftPackage == false else {
                 checkForUpdate(logger: logger)
-                logger.info("Done!")
+                logger.info("Done! Saved to \(finalPath)")
                 return
             }
             
@@ -110,7 +113,7 @@ extension FigmaExportCommand {
             
             checkForUpdate(logger: logger)
             
-            logger.info("Done!")
+            logger.info("Done! Saved to \(finalPath)")
         }
         
         private func exportAndroidIcons(client: Client, params: Params) throws {

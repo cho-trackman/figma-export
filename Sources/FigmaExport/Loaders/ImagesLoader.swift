@@ -84,7 +84,7 @@ final class ImagesLoader {
             suffix = templateSuffix
         }
         var newIcon = icon
-        newIcon.name = String(icon.name.dropLast(suffix?.count ?? 0))
+        //newIcon.name = String(icon.name.dropLast(suffix?.count ?? 0))
         newIcon.renderMode = renderMode
         return newIcon
     }
@@ -204,7 +204,7 @@ final class ImagesLoader {
     private func fetchImageComponents(fileId: String, frameName: String, filter: String? = nil) throws -> [NodeId: Component] {
         var components = try loadComponents(fileId: fileId)
             .filter {
-                $0.containingFrame.name == frameName && $0.useForPlatform(platform)
+                $0.containingFrame.pageName == frameName && $0.useForPlatform(platform)
             }
 
         if let filter {
@@ -244,6 +244,11 @@ final class ImagesLoader {
             return true
         }
         
+        // TODO: filter out all icons but the reset one
+        imagesDict = imagesDict.filter { _, component in
+            return (component.containingFrame.name ?? "").contains("Reset")
+        }
+        
         logger.info("Fetching vector images...")
         let imageIdToImagePath = try loadImages(fileId: fileId, imagesDict: imagesDict, params: params)
         
@@ -254,7 +259,8 @@ final class ImagesLoader {
         }
 
         // Group images by name
-        let groups = Dictionary(grouping: imagesDict) { $1.name.parseNameAndIdiom(platform: platform).name }
+        //let groups = Dictionary(grouping: imagesDict) { $1.name.parseNameAndIdiom(platform: platform).name }
+        let groups = Dictionary(grouping: imagesDict) { "\($1.containingFrame.name ?? "")/\($1.name)" }
 
         // Create image packs for groups
         let imagePacks = groups.compactMap { packName, components -> ImagePack? in

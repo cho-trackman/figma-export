@@ -360,7 +360,7 @@ public extension AssetsProcessable {
             if split.count == 2, split[0] == split[1] {
                 renamedAsset.name = String(split[0])
             } else {
-                renamedAsset.name = renamedAsset.name.replacingOccurrences(of: "/", with: "_")
+                //renamedAsset.name = renamedAsset.name.replacingOccurrences(of: "/", with: "_")
             }
             return renamedAsset
         }

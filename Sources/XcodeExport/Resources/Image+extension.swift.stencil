@@ -13,6 +13,7 @@ private class BundleProvider {
     static let bundle = Bundle(for: BundleProvider.self)
 }
 {% endif %}
-public extension Image {{ "{" }}{% include "Image+extension.swift.stencil.include" %}
+@available(iOS 11.0, macOS 10.7, tvOS 11.0, *)
+public extension TdsLegacyIconResource {{ "{" }}{% include "Image+extension.swift.stencil.include" %}
 }
 {% include "Bundle+extension.swift.stencil.include" %}
