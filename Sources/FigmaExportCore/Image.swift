@@ -17,6 +17,7 @@ public enum Scale {
 public struct Image: Asset {
 
     public var name: String
+    public let originalName: String
     public let scale: Scale
     public let format: String
     public let url: URL
@@ -35,6 +36,7 @@ public struct Image: Asset {
         isRTL: Bool = false
     ) {
         self.name = name
+        self.originalName = name
         self.scale = scale
         self.platform = platform
         self.url = url

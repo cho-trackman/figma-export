@@ -46,7 +46,7 @@ public struct Component: Codable {
 
 // MARK: - ContainingFrame
 public struct ContainingFrame: Codable {
-    public let nodeID: String?
+    public let nodeId: String?
     public var name: String?
     public let pageName: String
 }

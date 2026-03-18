@@ -13,8 +13,17 @@ final public class XcodeIconsExporter: XcodeImagesExporterBase {
         let filter = AssetsFilter(filters: preservesVectorRepresentation ?? [])
         
         let imageAssetsFiles = try icons.flatMap { imagePack -> [FileContents] in
-            let preservesVector = filter.match(name: imagePack.light.name)
-            return try imagePack.makeFileContents(to: assetsFolderURL, preservesVector: preservesVector, renderMode: imagePack.light.renderMode)
+            var preservesVector = filter.match(name: imagePack.light.name)
+            var renderMode = imagePack.light.renderMode
+            
+            if let first = imagePack.light.images.first,
+               (first.originalName.contains("Color=") ||
+               imagePack.light.name.contains("colorPickerColor")) {
+                preservesVector = false
+                renderMode = .original
+            }
+            
+            return try imagePack.makeFileContents(to: assetsFolderURL, preservesVector: preservesVector, renderMode: renderMode)
         }
         
         // Generate extensions

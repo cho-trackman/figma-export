@@ -210,7 +210,12 @@ final class ImagesLoader {
         if let filter {
             let assetsFilter = AssetsFilter(filter: filter)
             components = components.filter { component -> Bool in
-                assetsFilter.match(name: component.name)
+                if let name = component.containingFrame.name {
+                    return assetsFilter.match(name: name)
+                        || assetsFilter.match(name: component.name)
+                }
+                
+                return assetsFilter.match(name: component.name)
             }
         }
 
@@ -250,6 +255,7 @@ final class ImagesLoader {
         
         imagesDict = imagesDict.filter { _, component in
             let n = (component.containingFrame.name ?? "")
+            //return n.contains("Tracy")
             return n.contains("Reset")
             || n.contains("dot-grid")
             || n.contains("Tracy")
@@ -258,6 +264,8 @@ final class ImagesLoader {
             || n.contains("StrokeThicknessMin")
             || n.contains("Redo")
             || n.contains("Green Grid")
+            || n.contains("Altitude")
+            || n.contains("ColorPickerColor")
         }
 #endif
         
@@ -279,9 +287,23 @@ final class ImagesLoader {
             imagesDict.removeValue(forKey: nodeId)
         }
 
+        // Build a nodeId -> resolved frame name map.
+        // If multiple frames share the same name, append the nodeId to disambiguate.
+        let frameNameToNodeIds = Dictionary(grouping: imagesDict.values, by: { $0.containingFrame.nodeId ?? "" })
+            .reduce(into: [String: [String]]()) { result, entry in
+                let frameName = entry.value.first?.containingFrame.name ?? ""
+                result[frameName, default: []].append(entry.key)
+            }
+        
+        let nameMap: [String: String] = imagesDict.reduce(into: [:]) { result, entry in
+            let nodeId = entry.value.containingFrame.nodeId ?? ""
+            let frameName = entry.value.containingFrame.name ?? ""
+            let nodeIds = frameNameToNodeIds[frameName] ?? []
+            result[nodeId] = nodeIds.count > 1 ? "\(frameName)_\(nodeId)" : frameName
+        }
+
         // Group images by name
-        //let groups = Dictionary(grouping: imagesDict) { $1.name.parseNameAndIdiom(platform: platform).name }
-        let groups = Dictionary(grouping: imagesDict) { "\($1.containingFrame.name ?? "")/\($1.name)" }
+        let groups = Dictionary(grouping: imagesDict) { "\(nameMap[$1.containingFrame.nodeId ?? ""] ?? "")/\($1.name)" }
 
         // Create image packs for groups
         let imagePacks = groups.compactMap { packName, components -> ImagePack? in
@@ -293,6 +315,7 @@ final class ImagesLoader {
                 let isRTL = component.useRTL()
                 return Image(name: name, scale: .all, idiom: idiom, url: url, format: params.format, isRTL: isRTL)
             }
+            
             return ImagePack(name: packName, images: packImages, platform: platform)
         }
         return imagePacks
