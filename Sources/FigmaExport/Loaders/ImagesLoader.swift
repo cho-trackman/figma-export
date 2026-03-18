@@ -249,9 +249,26 @@ final class ImagesLoader {
         print("Build in release to include all icons!")
         
         imagesDict = imagesDict.filter { _, component in
-            return (component.containingFrame.name ?? "").contains("Reset")
+            let n = (component.containingFrame.name ?? "")
+            return n.contains("Reset")
+            || n.contains("dot-grid")
+            || n.contains("Tracy")
+            || n.contains("More Circle")
+            || n.contains("StrokeThickness")
+            || n.contains("StrokeThicknessMin")
+            || n.contains("Redo")
+            || n.contains("Green Grid")
         }
 #endif
+        
+        // Patch edge-cases
+        imagesDict = imagesDict.mapValues {
+            var c = $0
+            if let n = c.containingFrame.name, !n.hasPrefix("Icons/") {
+                c.containingFrame.name = "Icons/" + n
+            }
+            return c
+        }
         
         logger.info("Fetching vector images...")
         let imageIdToImagePath = try loadImages(fileId: fileId, imagesDict: imagesDict, params: params)

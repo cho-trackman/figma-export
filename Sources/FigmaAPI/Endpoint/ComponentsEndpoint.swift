@@ -41,12 +41,12 @@ public struct Component: Codable {
     public let nodeId: String
     public let name: String
     public let description: String?
-    public let containingFrame: ContainingFrame
+    public var containingFrame: ContainingFrame
 }
 
 // MARK: - ContainingFrame
 public struct ContainingFrame: Codable {
     public let nodeID: String?
-    public let name: String?
+    public var name: String?
     public let pageName: String
 }

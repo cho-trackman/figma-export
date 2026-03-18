@@ -326,7 +326,10 @@ public extension AssetsProcessable {
         let result = name.replace(matchRegExp) { array in
             replaceRegExp.replace(#"\$(\d)"#) {
                 let index = Int($0[1])!
-                return array[index]
+                if array.count > index {
+                    return array[index]
+                }
+                return ""
             }
         }
         
